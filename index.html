@@ -9,11 +9,36 @@
 	<style>
 		html,
 		body {
-			background-color: black;
 			margin: 0;
 			padding: 0;
 			overflow: hidden;
+			height: 100%;
 			overscroll-behavior: none;
+		}
+
+		/* Page background (sky) — actual grass tiles are drawn inside the canvas now */
+		body {
+			background-image: url('images/Grass%20Platform.png');
+			background-repeat: repeat-x;
+			background-position: bottom center;
+			background-attachment: fixed;
+			/* Width auto, height 200px to make tiles much larger */
+			background-size: auto 100px;
+		}
+
+		/* Make the canvas scale to fill the screen while preserving a pixelated look */
+		main {
+			height: 100vh;
+			margin: 0;
+		}
+
+		canvas {
+			display: block;
+			width: 100vw;
+			height: 100vh;
+			image-rendering: pixelated;
+			image-rendering: crisp-edges;
+			box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 		}
 	</style>
 </head>
