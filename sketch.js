@@ -20,6 +20,16 @@ grass.x = 0;
 grass.y = 100;
 grass.physics = STATIC; 
 
+let ground = new Group()
+ground.physics = STATIC;
+ground.d = 24;
+ground.tile = '=';
+ground.bounciness = 0;
+
+let tiles = [
+	'======================================================='
+]
+
 // 3. Create a level group container to spawn your level layout map
 
 q5.update = function () {
