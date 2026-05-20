@@ -1,51 +1,48 @@
 // 1. Create a visible drawing board with size parameters
-await Canvas(); 
-world.gravity.y = 0;
+await Canvas();
+world.gravity.y = 1;
 
 let ball = new Sprite();
-ball.x = 400; // Place the ball over the ground
-ball.y = 100;
+ball.x = 0;
+ball.y = -200;
 ball.diameter = 50;
 ball.img = '🤪';
+ball.physics = DYNAMIC;
+ball.bounciness = 0.1;
 
 // 2. Define your tile blueprint properties
-let grass = new Sprite();
-
-grass.w = 8; 
-grass.h = 8;
-grass.img = 'images/Block1.png';
-grass.scale.x = 5;
-grass.scale.y = 5;
-grass.x = 0;
-grass.y = 100;
-grass.physics = STATIC; 
-
-let ground = new Group()
+let ground = new Group();
 ground.physics = STATIC;
-ground.d = 24;
+ground.w = 8;
+ground.h = 8;
+ground.img = 'images/Block1.png';
 ground.tile = '=';
 ground.bounciness = 0;
+ground.scale = 5;
+
+
+
+
 
 let tiles = [
-	'======================================================='
-]
+	'= = = = = = = = = = = ======================================'
+];
 
-// 3. Create a level group container to spawn your level layout map
+let level = new Group()
+level.addTiles(tiles, -900, height / 2 - 50, 40, 50);
 
 q5.update = function () {
 	background('skyblue');
-	
-	// Keep the camera locked on your player
 
 	// Display UI text relative to player position
 	text('click or press W / S to jump!', ball.x - 70, ball.y - 50);
 
 	// Controls
-	if (kb.pressing('left')) player.vel.x = -5;
-	else if (kb.pressing('right')) player.vel.x = 5;
-	else player.vel.x = 0;
+	if (kb.pressing('left')) ball.vel.x = -5;
+	else if (kb.pressing('right')) ball.vel.x = 5;
+	else ball.vel.x = 0;
 
-	if (kb.pressing('up')) player.vel.y = -5;
-	else if (kb.pressing('down')) player.vel.y = 5;
-	else player.vel.y = 0;
+	if (kb.pressing('up')) ball.vel.y = -5;
+	else if (kb.pressing('down')) ball.vel.y = 5;
+	else ball.vel.y = 0;
 };
