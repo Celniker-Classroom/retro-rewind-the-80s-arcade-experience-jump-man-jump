@@ -16,10 +16,20 @@ let hitRightWall = false;
 let jumpLocked = false; // prevents mid-air jumps
 let prevJumpKey = false; // for edge detection
 
+function resetGame() {
+	bgIndex = 0;
+	slime.x = -820;
+	slime.y = 20;
+	slime.vel.x = 0;
+	slime.vel.y = 0;
+	jumpLocked = false;
+	hitRightWall = false;
+}
+
 function nextBackground() {
 	bgIndex = (bgIndex + 1) % backgrounds.length;
-	ball.x = -800;
-    ball.y = 50;
+	slime.x = -800;
+    slime.y = 50;
 }
 
 function drawBackground() {
@@ -42,23 +52,23 @@ function drawBackground() {
 	text(bg.label, width * 0.5, 36);
 }
 
-let ball = new Sprite();
-ball.scale = 5;
-ball.x = -820;
-ball.y = 20;
-ball.img = 'images/Slime.png';
-ball.physics = DYNAMIC;
-ball.bounciness = 0.1;
-// prevent the ball from rotating (no rolling) — set multiple fallbacks
-ball.fixedRotation = true;
-ball.allowRotation = false;
-ball.rotation = 0;
-ball.angle = 0;
-ball.angularVelocity = 0;
-ball.angularVel = 0;
+let slime = new Sprite();
+slime.scale = 5;
+slime.x = -820;
+slime.y = 20;
+slime.img = 'images/Slime.png';
+slime.physics = DYNAMIC;
+slime.bounciness = 0.1;
+// prevent the slime from rotating (no rolling) — set multiple fallbacks
+slime.fixedRotation = true;
+slime.allowRotation = false;
+slime.rotation = 0;
+slime.angle = 0;
+slime.angularVelocity = 0;
+slime.angularVel = 0;
 // tighten collision box so the visible sprite sits above the ground before colliding
-ball.w = 24;
-ball.h = 22;
+slime.w = 24;
+slime.h = 22;
 
 let wallLeft = new Sprite(-865, 200, 20, 2000, 'static');
 let wallRight = new Sprite(865, 200, 20, 2000, 'static');
@@ -126,32 +136,32 @@ q5.update = function () {
 
 	drawBackground();
 
-	// keep the ball upright: clear any angular velocity or rotation each frame
-	ball.rotation = 0;
-	ball.angle = 0;
-	ball.angularVelocity = 0;
-	ball.angularVel = 0;
-	ball.fixedRotation = true;
+	// keep the slime upright: clear any angular velocity or rotation each frame
+	slime.rotation = 0;
+	slime.angle = 0;
+	slime.angularVelocity = 0;
+	slime.angularVel = 0;
+	slime.fixedRotation = true;
 
 
 
 
 	// Controls
-	if (kb.pressing('left')) ball.vel.x = -5;
-	else if (kb.pressing('right')) ball.vel.x = 5;
-	else ball.vel.x = 0;
+	if (kb.pressing('left')) slime.vel.x = -5;
+	else if (kb.pressing('right')) slime.vel.x = 5;
+	else slime.vel.x = 0;
 
 	// Jump: edge-detect key-down and only allow a jump when grounded
-	let jumpKey = kb.pressing('up') || kb.pressing('w');
+	let jumpKey = kb.pressing('up') || kb.pressing('w') || kb.pressing('space');
 	// robust grounded check: collision OR almost-zero vertical velocity
-	let grounded = ball.collides(level) || ball.collides(ground1) || Math.abs(ball.vel.y || 0) < 0.6;
+	let grounded = slime.collides(level) || slime.collides(ground1) || Math.abs(slime.vel.y || 0) < 0.6;
 	if (jumpKey && !prevJumpKey && grounded && !jumpLocked) {
-		ball.vel.y = -12;
+		slime.vel.y = -12;
 		jumpLocked = true;
 	}
 	// optional down key to drop faster
 	if (kb.pressing('down') || kb.pressing('s')) {
-		ball.vel.y = 12;
+		slime.vel.y = 12;
 	}
 	// unlock jumping when we land
 	if (grounded) {
@@ -159,7 +169,11 @@ q5.update = function () {
 	}
 	prevJumpKey = jumpKey;
 
-	let hittingRight = ball.collides(wallRight);
+	if (slime.collides(spike)) {
+		resetGame();
+	}
+
+	let hittingRight = slime.collides(wallRight);
 	if (hittingRight && !hitRightWall) {
 		nextBackground();
 		hitRightWall = true;
