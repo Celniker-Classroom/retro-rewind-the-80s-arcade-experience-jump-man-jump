@@ -3,6 +3,33 @@ await Canvas();
 // make gravity stronger so falling feels snappier
 world.gravity.y = 40;
 
+let gameStarted = false;
+let musicStarted = false;
+let bgMusic = new Audio('sounds/game-music.mp3');
+bgMusic.loop = true;
+
+function startGame() {
+	if (gameStarted) return;
+	gameStarted = true;
+	const startScreen = document.getElementById('start-screen');
+	if (startScreen) startScreen.style.display = 'none';
+	if (!musicStarted) {
+		bgMusic.play().catch(() => {});
+		musicStarted = true;
+	}
+}
+
+const startButton = document.getElementById('start-button');
+if (startButton) {
+	startButton.addEventListener('click', startGame);
+}
+window.addEventListener('keydown', (event) => {
+	if (!gameStarted && (event.key === 'Enter' || event.key === ' ')) {
+		event.preventDefault();
+		startGame();
+	}
+});
+
 let backgrounds = [
 	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'DAYTIME',},
 	{top: '#e8d174', bottom: '#FF5E3A', accent: '#FFD86B', label: 'SUNSET'},
@@ -48,8 +75,8 @@ function drawBackground() {
 
 	fill(255, 220);
 	textSize(24);
-	textAlign(CENTER, CENTER);
-	text(bg.label, width * 0.5, 36);
+	textAlign(CENTER, TOP);
+	text(bg.label, 0, -400);
 }
 
 let slime = new Sprite();
@@ -86,7 +113,7 @@ ground1.scale = 5;
 let spike = new Group();
 spike.physics = STATIC;
 spike.w = 8;
-spike.h = 13;
+spike.h = 16;
 spike.img = 'images/BlockS.png';
 spike.tile = 'S';
 spike.bounciness = 0;
@@ -101,33 +128,55 @@ dirt.tile = 'D';
 dirt.bounciness = 0;
 dirt.scale = 5;
 
+let block7 = new Group();
+block7.physics = STATIC;
+block7.w = 8;
+block7.h = 10;
+block7.img = 'images/Block7.png';
+block7.tile = '7';
+block7.bounciness = 0;
+block7.scale = 5;
+
+let block9 = new Group();
+block9.physics = STATIC;
+block9.w = 8;
+block9.h = 10;
+block9.img = 'images/Block9.png';
+block9.tile = '9';
+block9.bounciness = 0;
+block9.scale = 5;
 
 
 
-let tiles = [
-	'                        =                         ',
-	'                                                  ',
-	'                                                  ',
-	'======================SSSSS========================', 
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+let tiles1 = [
+	'                      79                        ',
+	'                                                ',
+	'                                                ',
+	'                                                ',
+	'====================SSSSSS======================', 
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
 
 ];
 
 let level = new Group();
-level.addTiles(tiles, -900, 100, 40, 25);
+level.addTiles(tiles1, -900, 100, 40, 25);
 
 
 q5.update = function () {
+	if (!gameStarted) {
+		drawBackground();
+		return;
+	}
+
 	if (shake > 0) {
 		push();
 		translate(random(-shake, shake), random(-shake, shake));
