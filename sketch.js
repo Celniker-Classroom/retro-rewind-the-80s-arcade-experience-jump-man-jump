@@ -94,7 +94,7 @@ slime.angle = 0;
 slime.angularVelocity = 0;
 slime.angularVel = 0;
 // tighten collision box so the visible sprite sits above the ground before colliding
-slime.w = 24;
+slime.w = 38;
 slime.h = 22;
 
 let wallLeft = new Sprite(-865, 200, 20, 2000, 'static');
