@@ -2,6 +2,7 @@
 await Canvas();
 // make gravity stronger so falling feels snappier
 world.gravity.y = 40;
+let currentLevel = 0;
 
 let gameStarted = false;
 let musicStarted = false;
@@ -33,33 +34,51 @@ window.addEventListener('keydown', (event) => {
 let backgrounds = [
 	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'LEVEL 1'},
 	{top: '#e8d174', bottom: '#FF5E3A', accent: '#FFD86B', label: 'LEVEL 2'},
-	{top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'LEVEL 3'}
+	{top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'LEVEL 3'},
+	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'YOU WIN!!!'}
 ];
 let bgIndex = 0;
 let bgFlash = 0;
 let shake = 0;
 let hitRightWall = false;
+let hitBottomWall = false;
 // jump control
 let jumpLocked = false;
 let prevJumpKey = false;
 
-function resetGame() {
-	jumpLocked = false;
-	hitRightWall = false;
+function spawnLocation() {
+if (currentLevel === 0) {
+	slime.x = -820;
+	slime.y = -20;
+	}
+
 	if (currentLevel === 1) {
 	slime.x = -820;
-	slime.y = 0;
+	slime.y = -30;
 	}
-	else if (currentLevel === 2) {
+
+	if (currentLevel === 2) {
 	slime.x = 0;
-	slime.y = -180;
+	slime.y = -500;
+	world.gravity.y = 20;
 	}
-	else {
-	slime.x = -820;
-	slime.y = 20;
+
+	if (currentLevel === 3) {
+	slime.x = 0;
+	slime.y = -400;
+	world.gravity.y = 10;
 	}
 	slime.vel.x = 0;
 	slime.vel.y = 0;
+	console.log(slime.x, slime.y);
+}
+function resetGame() {
+	jumpLocked = false;
+	hitRightWall = false;
+	hitBottomWall = false;
+	slime.vel.x = 0;
+	slime.vel.y = 0;
+	spawnLocation();
 }
 
 function nextBackground() {
@@ -88,8 +107,7 @@ function drawBackground() {
 
 let slime = new Sprite();
 slime.scale = 5;
-slime.x = -820;
-slime.y = 20;
+spawnLocation();
 slime.img = 'images/Slime.png';
 slime.physics = DYNAMIC;
 slime.bounciness = 0.1;
@@ -104,6 +122,7 @@ slime.h = 22;
 
 let wallLeft = new Sprite(-865, 200, 20, 2000, 'static');
 let wallRight = new Sprite(865, 200, 20, 2000, 'static');
+let wallBottom = new Sprite(0, 459, 2000, 20, 'static');
 
 // 2. Define your tile blueprint properties
 let ground1 = new Group();
@@ -127,7 +146,7 @@ spike.scale = 5;
 let dirt = new Group();
 dirt.physics = STATIC;
 dirt.w = 8;
-dirt.h = 13;
+dirt.h = 10;
 dirt.img = 'images/Block5.png';
 dirt.tile = 'D';
 dirt.bounciness = 0;
@@ -151,7 +170,15 @@ block9.tile = '9';
 block9.bounciness = 0;
 block9.scale = 5;
 
-let tiles3 = [
+let trophy = new Group();
+trophy.w = 16;
+trophy.h = 16;
+trophy.img = '🏆';
+trophy.tile = 'T';
+trophy.bounciness = 0;
+trophy.scale = 5;
+
+let tiles1 = [
 	'                      79                        ',
 	'                                                ',
 	'                                                ',
@@ -189,33 +216,52 @@ let tiles2 = [
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
 ];
 
-let tiles1 = [
+let tiles3 = [
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDD    SS  DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDS       DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDS   SS  DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD       SDDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDDSS      DDDDDDDDDDDDDDDDDDDDD',
-	'',
-	'',
-	'',
-	'',
-	'',
-	'',
-	'',
-	'',
-	'',
-	'',
-	'',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDSSS     DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD     S  DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD S      DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD       SDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD    S   DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',	
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',	
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',	
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',	
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+
+
 ];
 
+let tiles4 = [
+    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+]
+
 let level = new Group();
-let levelTiles = [tiles1, tiles2, tiles3];
-let currentLevel = 0;
+let levelTiles = [tiles1, tiles2, tiles3, tiles4];
+
 
 function setLevel(index) {
 	for (let i = level.length - 1; i >= 0; i--) {
@@ -223,7 +269,13 @@ function setLevel(index) {
 	}
 	level = new Group();
 	level.collider = 'static';
-	level.addTiles(levelTiles[index], -900, 100, 40, 25);
+	if (index == 2) {
+		level.addTiles(levelTiles[index], -900, -300, 40, 25);
+	} else if (index == 3) {
+		level.addTiles(levelTiles[index], -900, -100, 40, 25);
+	} else {
+		level.addTiles(levelTiles[index], -900, 100, 75, 100);
+	}
 }
 
 setLevel(currentLevel);
@@ -275,24 +327,30 @@ q5.update = function () {
 	}
 
 	let hittingRight = slime.collides(wallRight);
+	let hittingBottom = slime.collides(wallBottom);
 
 	if (hittingRight && !hitRightWall) {
 		hitRightWall = true;
-
-		// Teleport player away from wall immediately
-		slime.x = -800;
-		slime.y = 50;
-		slime.vel.x = 0;
-		slime.vel.y = 0;
-
-		// Swap level and background
 		currentLevel++;
 		setLevel(currentLevel);
 		nextBackground();
+		spawnLocation();
 	}
 
 	if (!hittingRight) {
 		hitRightWall = false;
+	}
+
+	if (hittingBottom && !hitBottomWall) {
+		hitBottomWall = true;
+		currentLevel++;
+		setLevel(currentLevel);
+		nextBackground();
+		spawnLocation();
+	}
+
+	if (!hittingBottom) {
+		hitBottomWall = false;
 	}
 
 	if (shake > 0) {
