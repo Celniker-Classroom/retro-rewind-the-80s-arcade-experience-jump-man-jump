@@ -31,32 +31,39 @@ window.addEventListener('keydown', (event) => {
 });
 
 let backgrounds = [
-	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'DAYTIME',},
-	{top: '#e8d174', bottom: '#FF5E3A', accent: '#FFD86B', label: 'SUNSET'},
-	{top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'NIGHTFALL'}
+	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'LEVEL 1'},
+	{top: '#e8d174', bottom: '#FF5E3A', accent: '#FFD86B', label: 'LEVEL 2'},
+	{top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'LEVEL 3'}
 ];
 let bgIndex = 0;
 let bgFlash = 0;
 let shake = 0;
 let hitRightWall = false;
 // jump control
-let jumpLocked = false; // prevents mid-air jumps
-let prevJumpKey = false; // for edge detection
+let jumpLocked = false;
+let prevJumpKey = false;
 
 function resetGame() {
-	bgIndex = 0;
-	slime.x = -820;
-	slime.y = 20;
-	slime.vel.x = 0;
-	slime.vel.y = 0;
 	jumpLocked = false;
 	hitRightWall = false;
+	if (currentLevel === 1) {
+	slime.x = -820;
+	slime.y = 0;
+	}
+	else if (currentLevel === 2) {
+	slime.x = 0;
+	slime.y = -180;
+	}
+	else {
+	slime.x = -820;
+	slime.y = 20;
+	}
+	slime.vel.x = 0;
+	slime.vel.y = 0;
 }
 
 function nextBackground() {
 	bgIndex = (bgIndex + 1) % backgrounds.length;
-	slime.x = -800;
-    slime.y = 50;
 }
 
 function drawBackground() {
@@ -86,14 +93,12 @@ slime.y = 20;
 slime.img = 'images/Slime.png';
 slime.physics = DYNAMIC;
 slime.bounciness = 0.1;
-// prevent the slime from rotating (no rolling) — set multiple fallbacks
 slime.fixedRotation = true;
 slime.allowRotation = false;
 slime.rotation = 0;
 slime.angle = 0;
 slime.angularVelocity = 0;
 slime.angularVel = 0;
-// tighten collision box so the visible sprite sits above the ground before colliding
 slime.w = 38;
 slime.h = 22;
 
@@ -112,7 +117,7 @@ ground1.scale = 5;
 
 let spike = new Group();
 spike.physics = STATIC;
-spike.w = 8;
+spike.w = 7;
 spike.h = 16;
 spike.img = 'images/BlockS.png';
 spike.tile = 'S';
@@ -146,9 +151,7 @@ block9.tile = '9';
 block9.bounciness = 0;
 block9.scale = 5;
 
-
-
-let tiles1 = [
+let tiles3 = [
 	'                      79                        ',
 	'                                                ',
 	'                                                ',
@@ -164,11 +167,66 @@ let tiles1 = [
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+];
 
+
+let tiles2 = [
+	'======  79    79    79                 7DDDDDDDD',
+	'                                 79             ',
+	'                           79                   ',
+	'												 ',
+	'                                                ',
+	'SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+];
+
+let tiles1 = [
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD    SS  DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDS       DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD       SDDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDDSS      DDDDDDDDDDDDDDDDDDDDD',
+	'',
+	'',
+	'',
+	'',
+	'',
+	'',
+	'',
+	'',
+	'',
+	'',
+	'',
 ];
 
 let level = new Group();
-level.addTiles(tiles1, -900, 100, 40, 25);
+let levelTiles = [tiles1, tiles2, tiles3];
+let currentLevel = 0;
+
+function setLevel(index) {
+	for (let i = level.length - 1; i >= 0; i--) {
+		level[i].delete();
+	}
+	level = new Group();
+	level.collider = 'static';
+	level.addTiles(levelTiles[index], -900, 100, 40, 25);
+}
+
+setLevel(currentLevel);
 
 
 q5.update = function () {
@@ -185,15 +243,12 @@ q5.update = function () {
 
 	drawBackground();
 
-	// keep the slime upright: clear any angular velocity or rotation each frame
+	// keep the slime upright
 	slime.rotation = 0;
 	slime.angle = 0;
 	slime.angularVelocity = 0;
 	slime.angularVel = 0;
 	slime.fixedRotation = true;
-
-
-
 
 	// Controls
 	if (kb.pressing('left')) slime.vel.x = -5;
@@ -202,17 +257,14 @@ q5.update = function () {
 
 	// Jump: edge-detect key-down and only allow a jump when grounded
 	let jumpKey = kb.pressing('up') || kb.pressing('w') || kb.pressing('space');
-	// robust grounded check: collision OR almost-zero vertical velocity
-	let grounded = slime.collides(level) || slime.collides(ground1) || Math.abs(slime.vel.y || 0) < 0.6;
+	let grounded = slime.collides(level) || Math.abs(slime.vel.y || 0) < 0.6;
 	if (jumpKey && !prevJumpKey && grounded && !jumpLocked) {
 		slime.vel.y = -12;
 		jumpLocked = true;
 	}
-	// optional down key to drop faster
 	if (kb.pressing('down') || kb.pressing('s')) {
 		slime.vel.y = 12;
 	}
-	// unlock jumping when we land
 	if (grounded) {
 		jumpLocked = false;
 	}
@@ -223,10 +275,22 @@ q5.update = function () {
 	}
 
 	let hittingRight = slime.collides(wallRight);
+
 	if (hittingRight && !hitRightWall) {
-		nextBackground();
 		hitRightWall = true;
+
+		// Teleport player away from wall immediately
+		slime.x = -800;
+		slime.y = 50;
+		slime.vel.x = 0;
+		slime.vel.y = 0;
+
+		// Swap level and background
+		currentLevel++;
+		setLevel(currentLevel);
+		nextBackground();
 	}
+
 	if (!hittingRight) {
 		hitRightWall = false;
 	}
