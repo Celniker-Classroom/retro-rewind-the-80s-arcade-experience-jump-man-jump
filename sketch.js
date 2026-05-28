@@ -40,7 +40,7 @@ window.addEventListener('keydown', (event) => {
 
 let backgrounds = [
 	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'LEVEL 1 - THE FIRST SPIKES'},
-	{top: '#e8d174', bottom: '#FF5E3A', accent: '#FFD86B', label: 'LEVEL 2 - HOPPER'},
+	{top: '#e8d174', bottom: '#FF5E3A', accent: '#ffffff', label: 'LEVEL 2 - HOPPER'},
 	{top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'LEVEL 3 - LOW GRAVITY DROPPER'},
 	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'YOU WIN!!!'}
 ];
