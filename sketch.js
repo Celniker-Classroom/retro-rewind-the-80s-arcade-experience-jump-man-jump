@@ -7,6 +7,11 @@ let currentLevel = 0;
 let gameStarted = false;
 let musicStarted = false;
 let bgMusic = new Audio('sounds/game-music.mp3');
+let jumpSound = new Audio('sounds/jump.wav');
+let dieSound = new Audio('sounds/die.wav');
+let winSound = new Audio('sounds/victory.wav');
+let moveSound = new Audio('sounds/move.wav');
+let victory = false;
 bgMusic.loop = true;
 
 function startGame() {
@@ -32,9 +37,9 @@ window.addEventListener('keydown', (event) => {
 });
 
 let backgrounds = [
-	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'LEVEL 1'},
-	{top: '#e8d174', bottom: '#FF5E3A', accent: '#FFD86B', label: 'LEVEL 2'},
-	{top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'LEVEL 3'},
+	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'LEVEL 1 - THE FIRST SPIKES'},
+	{top: '#e8d174', bottom: '#FF5E3A', accent: '#FFD86B', label: 'LEVEL 2 - HOPPER'},
+	{top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'LEVEL 3 - LOW GRAVITY DROPPER'},
 	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'YOU WIN!!!'}
 ];
 let bgIndex = 0;
@@ -67,11 +72,17 @@ if (currentLevel === 0) {
 	slime.x = 0;
 	slime.y = -400;
 	world.gravity.y = 10;
+	if (!victory) {
+	bgMusic.pause();
+	winSound.play().catch(() => {});
+	victory = true;
 	}
+}
 	slime.vel.x = 0;
 	slime.vel.y = 0;
 	console.log(slime.x, slime.y);
 }
+
 function resetGame() {
 	jumpLocked = false;
 	hitRightWall = false;
@@ -82,7 +93,9 @@ function resetGame() {
 }
 
 function nextBackground() {
-	bgIndex = (bgIndex + 1) % backgrounds.length;
+	if (bgIndex < backgrounds.length - 1) {
+		bgIndex = (bgIndex + 1) % backgrounds.length;
+}
 }
 
 function drawBackground() {
@@ -122,7 +135,7 @@ slime.h = 22;
 
 let wallLeft = new Sprite(-865, 200, 20, 2000, 'static');
 let wallRight = new Sprite(865, 200, 20, 2000, 'static');
-let wallBottom = new Sprite(0, 459, 2000, 20, 'static');
+let wallBottom = new Sprite(0, 458, 2000, 20, 'static');
 
 // 2. Define your tile blueprint properties
 let ground1 = new Group();
@@ -218,6 +231,16 @@ let tiles2 = [
 
 let tiles3 = [
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDD          DDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDD          DDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
@@ -270,11 +293,11 @@ function setLevel(index) {
 	level = new Group();
 	level.collider = 'static';
 	if (index == 2) {
-		level.addTiles(levelTiles[index], -900, -300, 40, 25);
+		level.addTiles(levelTiles[index], -900, -425, 40, 25);
 	} else if (index == 3) {
-		level.addTiles(levelTiles[index], -900, -100, 40, 25);
+		level.addTiles(levelTiles[index], -900, -100, 75, 100);
 	} else {
-		level.addTiles(levelTiles[index], -900, 100, 75, 100);
+		level.addTiles(levelTiles[index], -900, 100, 40, 25);
 	}
 }
 
@@ -307,12 +330,17 @@ q5.update = function () {
 	else if (kb.pressing('right')) slime.vel.x = 5;
 	else slime.vel.x = 0;
 
+	if (Math.abs(slime.vel.x) > 0 && !slime.collides(wallLeft) && !slime.collides(wallRight) && !slime.collides(spike) && slime.collides(level)) {
+		moveSound.play().catch(() => {});
+	}
 	// Jump: edge-detect key-down and only allow a jump when grounded
 	let jumpKey = kb.pressing('up') || kb.pressing('w') || kb.pressing('space');
 	let grounded = slime.collides(level) || Math.abs(slime.vel.y || 0) < 0.6;
 	if (jumpKey && !prevJumpKey && grounded && !jumpLocked) {
 		slime.vel.y = -12;
 		jumpLocked = true;
+		jumpSound.currentTime = 0;
+		jumpSound.play().catch(() => {});
 	}
 	if (kb.pressing('down') || kb.pressing('s')) {
 		slime.vel.y = 12;
@@ -323,13 +351,16 @@ q5.update = function () {
 	prevJumpKey = jumpKey;
 
 	if (slime.collides(spike)) {
+		dieSound.currentTime = 0;
+		dieSound.play().catch(() => {});
+		bgFlash = 10;
 		resetGame();
 	}
 
 	let hittingRight = slime.collides(wallRight);
 	let hittingBottom = slime.collides(wallBottom);
 
-	if (hittingRight && !hitRightWall) {
+	if (hittingRight && !hitRightWall && currentLevel !== 3) {
 		hitRightWall = true;
 		currentLevel++;
 		setLevel(currentLevel);
@@ -341,7 +372,7 @@ q5.update = function () {
 		hitRightWall = false;
 	}
 
-	if (hittingBottom && !hitBottomWall) {
+	if (hittingBottom && !hitBottomWall && currentLevel !== 3) {
 		hitBottomWall = true;
 		currentLevel++;
 		setLevel(currentLevel);
