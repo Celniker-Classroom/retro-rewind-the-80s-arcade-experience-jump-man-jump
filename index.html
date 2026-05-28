@@ -6,78 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link rel="icon" href="favicon.png">
 	<title>q5play</title>
-	<style>
-		html,
-		body {
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			height: 100%;
-			position: relative;
-			overscroll-behavior: none;
-		}
-
-		/* Page background (sky) — actual grass tiles are drawn inside the canvas now */
-
-
-		/* Make the canvas scale to fill the screen while preserving a pixelated look */
-		main {
-			height: 100vh;
-			margin: 0;
-		}
-
-		canvas {
-			display: block;
-			width: 100vw;
-			height: 100vh;
-			image-rendering: pixelated;
-			image-rendering: crisp-edges;
-			box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-		}
-
-		#start-screen {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: rgba(0, 0, 0, 0.7);
-			z-index: 10;
-		}
-
-		#start-panel {
-			text-align: center;
-			color: #fff;
-			padding: 32px 40px;
-			border-radius: 24px;
-			border: 2px solid rgb(0, 255, 76);
-			background: rgba(0, 0, 0, 0.85);
-			box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-		}
-
-		#start-panel h1 {
-			margin: 0 0 20px;
-			font-size: 3rem;
-		}
-
-		#start-button {
-			font-size: 1.5rem;
-			padding: 14px 32px;
-			border: none;
-			border-radius: 14px;
-			background: #00aaff;
-			color: #fff;
-			cursor: pointer;
-			transition: background 0.2s ease;
-		}
-
-		#start-button:hover {
-			background: #55d4ff;
-		}
-	</style>
+	<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -90,6 +19,8 @@
 		</div>
 	</div>
 
+	<div id="death-counter">💀 Deaths: <span id="death-count">0</span></div>
+
 	<!-- ONLINE LINKS -->
 	<script type="module" src="https://q5js.org/q5.js"></script>
 	<script type="importmap">
@@ -98,17 +29,6 @@
     } }
   </script>
 	<script type="module" src="https://q5play.org/q5play.js"></script>
-
-	<!-- OFFLINE LINKS -->
-	<!--
-  <script type="module" src="/node_modules/q5/q5.js"></script>
-  <script type="importmap">
-    { "imports": {
-      "box2d3-wasm": "/node_modules/box2d3-wasm/build/dist/es/deluxe/Box2D.deluxe.mjs"
-    } }
-  </script>
-  <script type="module" src="/node_modules/q5play/q5play.js"></script>
-  -->
 
 	<!-- YOUR SKETCH -->
 	<script type="module" src="sketch.js"></script>

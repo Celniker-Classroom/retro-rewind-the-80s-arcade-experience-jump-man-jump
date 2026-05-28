@@ -12,6 +12,7 @@ let dieSound = new Audio('sounds/die.wav');
 let winSound = new Audio('sounds/victory.wav');
 let moveSound = new Audio('sounds/move.wav');
 let victory = false;
+let deathCount = 0;
 bgMusic.loop = true;
 let deathX = 0;
 let deathY = 0;
@@ -22,7 +23,7 @@ function startGame() {
 	const startScreen = document.getElementById('start-screen');
 	if (startScreen) startScreen.style.display = 'none';
 	if (!musicStarted) {
-		bgMusic.play().catch(() => {});
+		bgMusic.play().catch(() => { });
 		musicStarted = true;
 	}
 }
@@ -39,10 +40,10 @@ window.addEventListener('keydown', (event) => {
 });
 
 let backgrounds = [
-	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'LEVEL 1 - THE FIRST SPIKES'},
-	{top: '#e8d174', bottom: '#FF5E3A', accent: '#ffffff', label: 'LEVEL 2 - HOPPER'},
-	{top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'LEVEL 3 - LOW GRAVITY DROPPER'},
-	{top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'YOU WIN!!!'}
+	{ top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'LEVEL 1 - THE FIRST SPIKES' },
+	{ top: '#e8d174', bottom: '#FF5E3A', accent: '#ffffff', label: 'LEVEL 2 - HOPPER' },
+	{ top: '#000245', bottom: '#8AE39B', accent: '#FF66C4', label: 'LEVEL 3 - LOW GRAVITY DROPPER' },
+	{ top: '#00a2ff', bottom: '#551A8B', accent: '#56F6FF', label: 'YOU WIN!!!' }
 ];
 let bgIndex = 0;
 let bgFlash = 0;
@@ -55,12 +56,12 @@ let prevJumpKey = false;
 
 function spawnLocation() {
 	if (currentLevel === 0) {
-		slime.x = -width/2 + 50;
+		slime.x = -width / 2 + 50;
 		slime.y = -20;
 	}
 
 	if (currentLevel === 1) {
-		slime.x = -width/2 + 50;
+		slime.x = -width / 2 + 50;
 		slime.y = -30;
 	}
 
@@ -76,7 +77,7 @@ function spawnLocation() {
 		world.gravity.y = 10;
 		if (!victory) {
 			bgMusic.pause();
-			winSound.play().catch(() => {});
+			winSound.play().catch(() => { });
 			victory = true;
 		}
 	}
@@ -108,11 +109,11 @@ function drawBackground() {
 	fill(bg.bottom);
 	rect(0, height * 0.5, width, height * 0.5);
 
-if (bgFlash > 0) {
-    fill(bg.accent);
-    ellipse(deathX, deathY, bgFlash * 10, bgFlash * 10);
-    bgFlash -= 1;
-}
+	if (bgFlash > 0) {
+		fill(bg.accent);
+		ellipse(deathX, deathY, bgFlash * 10, bgFlash * 10);
+		bgFlash -= 1;
+	}
 
 	fill(255, 220);
 	textSize(24);
@@ -135,9 +136,9 @@ slime.angularVel = 0;
 slime.w = 38;
 slime.h = 22;
 
-let wallLeft = new Sprite(-width/2 - 10, 0, 20, 2000, 'static');
-let wallRight = new Sprite(width/2 + 10, 0, 20, 2000, 'static');
-let wallBottom = new Sprite(0, height/2 + 10, 2000, 20, 'static');
+let wallLeft = new Sprite(-width / 2 - 10, 0, 20, 2000, 'static');
+let wallRight = new Sprite(width / 2 + 10, 0, 20, 2000, 'static');
+let wallBottom = new Sprite(0, height / 2 + 10, 2000, 20, 'static');
 
 // 2. Define your tile blueprint properties
 let ground1 = new Group();
@@ -328,7 +329,7 @@ q5.update = function () {
 	else slime.vel.x = 0;
 
 	if (Math.abs(slime.vel.x) > 0 && !slime.collides(wallLeft) && !slime.collides(wallRight) && !slime.collides(spike) && slime.collides(level)) {
-		moveSound.play().catch(() => {});
+		moveSound.play().catch(() => { });
 	}
 
 	// Jump: edge-detect key-down and only allow a jump when grounded
@@ -338,7 +339,7 @@ q5.update = function () {
 		slime.vel.y = -12;
 		jumpLocked = true;
 		jumpSound.currentTime = 0;
-		jumpSound.play().catch(() => {});
+		jumpSound.play().catch(() => { });
 	}
 	if (kb.pressing('down') || kb.pressing('s')) {
 		slime.vel.y = 12;
@@ -349,13 +350,15 @@ q5.update = function () {
 	prevJumpKey = jumpKey;
 
 	if (slime.collides(spike)) {
-    deathX = slime.x;
-    deathY = slime.y;
-    dieSound.currentTime = 0;
-    dieSound.play().catch(() => {});
-    bgFlash = 10;
-    resetGame();
-}
+		deathX = slime.x;
+		deathY = slime.y;
+		dieSound.currentTime = 0;
+		dieSound.play().catch(() => { });
+		bgFlash = 10;
+		deathCount++;
+    	document.getElementById('death-count').textContent = deathCount;
+		resetGame();
+	}
 
 	let hittingRight = slime.collides(wallRight);
 	let hittingBottom = slime.collides(wallBottom);
