@@ -52,32 +52,32 @@ let jumpLocked = false;
 let prevJumpKey = false;
 
 function spawnLocation() {
-if (currentLevel === 0) {
-	slime.x = -820;
-	slime.y = -20;
+	if (currentLevel === 0) {
+		slime.x = -width/2 + 50;
+		slime.y = -20;
 	}
 
 	if (currentLevel === 1) {
-	slime.x = -820;
-	slime.y = -30;
+		slime.x = -width/2 + 50;
+		slime.y = -30;
 	}
 
 	if (currentLevel === 2) {
-	slime.x = 0;
-	slime.y = -500;
-	world.gravity.y = 20;
+		slime.x = 0;
+		slime.y = -500;
+		world.gravity.y = 20;
 	}
 
 	if (currentLevel === 3) {
-	slime.x = 0;
-	slime.y = -400;
-	world.gravity.y = 10;
-	if (!victory) {
-	bgMusic.pause();
-	winSound.play().catch(() => {});
-	victory = true;
+		slime.x = 0;
+		slime.y = -400;
+		world.gravity.y = 10;
+		if (!victory) {
+			bgMusic.pause();
+			winSound.play().catch(() => {});
+			victory = true;
+		}
 	}
-}
 	slime.vel.x = 0;
 	slime.vel.y = 0;
 	console.log(slime.x, slime.y);
@@ -95,7 +95,7 @@ function resetGame() {
 function nextBackground() {
 	if (bgIndex < backgrounds.length - 1) {
 		bgIndex = (bgIndex + 1) % backgrounds.length;
-}
+	}
 }
 
 function drawBackground() {
@@ -133,9 +133,9 @@ slime.angularVel = 0;
 slime.w = 38;
 slime.h = 22;
 
-let wallLeft = new Sprite(-865, 200, 20, 2000, 'static');
-let wallRight = new Sprite(865, 200, 20, 2000, 'static');
-let wallBottom = new Sprite(0, 458, 2000, 20, 'static');
+let wallLeft = new Sprite(-width/2 - 10, 0, 20, 2000, 'static');
+let wallRight = new Sprite(width/2 + 10, 0, 20, 2000, 'static');
+let wallBottom = new Sprite(0, height/2 + 10, 2000, 20, 'static');
 
 // 2. Define your tile blueprint properties
 let ground1 = new Group();
@@ -196,7 +196,7 @@ let tiles1 = [
 	'                                                ',
 	'                                                ',
 	'                                                ',
-	'====================SSSSSS======================', 
+	'====================SSSSSS======================',
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
@@ -209,12 +209,11 @@ let tiles1 = [
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
 ];
 
-
 let tiles2 = [
 	'======  79    79    79                 7DDDDDDDD',
 	'                                 79             ',
 	'                           79                   ',
-	'												 ',
+	'                                                ',
 	'                                                ',
 	'SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS',
 	'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
@@ -262,17 +261,14 @@ let tiles3 = [
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD    S   DDDDDDDDDDDDDDDDDDDDD',
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
-	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',	
-	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',	
-	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',	
-	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',	
 	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
-
-
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
+	'DDDDDDDDDDDDDDDDDDD        DDDDDDDDDDDDDDDDDDDDD',
 ];
 
 let tiles4 = [
-    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
 	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
 	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
 	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
@@ -280,11 +276,11 @@ let tiles4 = [
 	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
 	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
 	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
-]
+	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+];
 
 let level = new Group();
 let levelTiles = [tiles1, tiles2, tiles3, tiles4];
-
 
 function setLevel(index) {
 	for (let i = level.length - 1; i >= 0; i--) {
@@ -302,7 +298,6 @@ function setLevel(index) {
 }
 
 setLevel(currentLevel);
-
 
 q5.update = function () {
 	if (!gameStarted) {
@@ -333,6 +328,7 @@ q5.update = function () {
 	if (Math.abs(slime.vel.x) > 0 && !slime.collides(wallLeft) && !slime.collides(wallRight) && !slime.collides(spike) && slime.collides(level)) {
 		moveSound.play().catch(() => {});
 	}
+
 	// Jump: edge-detect key-down and only allow a jump when grounded
 	let jumpKey = kb.pressing('up') || kb.pressing('w') || kb.pressing('space');
 	let grounded = slime.collides(level) || Math.abs(slime.vel.y || 0) < 0.6;
