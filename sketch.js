@@ -13,6 +13,8 @@ let winSound = new Audio('sounds/victory.wav');
 let moveSound = new Audio('sounds/move.wav');
 let victory = false;
 bgMusic.loop = true;
+let deathX = 0;
+let deathY = 0;
 
 function startGame() {
 	if (gameStarted) return;
@@ -106,11 +108,11 @@ function drawBackground() {
 	fill(bg.bottom);
 	rect(0, height * 0.5, width, height * 0.5);
 
-	if (bgFlash > 0) {
-		fill(bg.accent);
-		ellipse(width * 0.5, height * 0.25, bgFlash * 10, bgFlash * 10);
-		bgFlash -= 1;
-	}
+if (bgFlash > 0) {
+    fill(bg.accent);
+    ellipse(deathX, deathY, bgFlash * 10, bgFlash * 10);
+    bgFlash -= 1;
+}
 
 	fill(255, 220);
 	textSize(24);
@@ -347,11 +349,13 @@ q5.update = function () {
 	prevJumpKey = jumpKey;
 
 	if (slime.collides(spike)) {
-		dieSound.currentTime = 0;
-		dieSound.play().catch(() => {});
-		bgFlash = 10;
-		resetGame();
-	}
+    deathX = slime.x;
+    deathY = slime.y;
+    dieSound.currentTime = 0;
+    dieSound.play().catch(() => {});
+    bgFlash = 10;
+    resetGame();
+}
 
 	let hittingRight = slime.collides(wallRight);
 	let hittingBottom = slime.collides(wallBottom);
